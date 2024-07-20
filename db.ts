@@ -59,7 +59,6 @@ export async function upsertUser(user: User) {
       .commit();
     if (!ok) throw new Error("Something went wrong.");
   }
-
 }
 
 export async function updateUserAndAddress(user: User, address: Address) {

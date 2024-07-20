@@ -32,20 +32,21 @@ router
     ctx.response.body = await getAddressByUserId(id);
   })
   .post("/users", async (ctx: Context) => {
-    const body = ctx.request.body();
-    const user = await body.value;
+    const user = await ctx.request.body.json();
     await upsertUser(user);
+    ctx.response.status = 201;
   })
   .post("/users/:id/address", async (ctx: Context) => {
     const { id } = ctx.params;
-    const body = ctx.request.body();
-    const address = await body.value;
+    const address = await ctx.request.body.json();
     const user = await getUserById(id);
     await updateUserAndAddress(user, address);
+    ctx.response.status = 201;
   })
   .delete("/users/:id", async (ctx: Context) => {
     const { id } = ctx.params;
     await deleteUserById(id);
+    ctx.response.status = 204;
   });
 
 const app = new Application();
@@ -53,4 +54,9 @@ const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-await app.listen({ port: 8000 });
+const handler = async (request: Request): Promise<Response> => {
+  const response = await app.handle(request);
+  return response ?? new Response("Not Found", { status: 404 });
+};
+
+Deno.serve(handler);
