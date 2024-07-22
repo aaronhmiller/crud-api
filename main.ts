@@ -36,6 +36,11 @@ router
     await upsertUser(user);
     ctx.response.status = 201;
   })
+  .put("/users", async (ctx: Context) => {
+    const user = await ctx.request.body.json();
+    await upsertUser(user);
+    ctx.response.status = 201;
+  })
   .post("/users/:id/address", async (ctx: Context) => {
     const { id } = ctx.params;
     const address = await ctx.request.body.json();
